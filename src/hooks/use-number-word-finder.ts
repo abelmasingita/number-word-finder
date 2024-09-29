@@ -2,74 +2,176 @@ import { useEffect, useState } from 'react'
 import useGet from '../lib/api/use-get'
 import { GeneratedWord, SolvePuzzle } from '../util/interfaces/GeneratedWord'
 import usePost from '../lib/api/use-post'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+
+const MySwal = withReactContent(Swal) // used for error handling
 
 const useGeneratedString = () => {
   const [length, setLength] = useState<number | null>(null)
+  const [item, setItem] = useState<GeneratedWord>({
+    length: 0,
+    wordCount: 0,
+    wordSequence: '',
+  })
   const { fetchData, loading, error } = useGet<GeneratedWord>(
     length !== null ? `/api/PuzzleGenerator/minLength/${length}` : '',
     true
   )
 
-  const [item, setItem] = useState<GeneratedWord>({
-    length: 0,
-    wordCount: 0,
-    wordSequence: '',
-  })
-
-  const handleGenerate = async (newLength: number) => {
-    setLength(newLength)
-    try {
-      const response = await fetchData()
-      if (response) {
-        setItem(response)
-      } else {
-        console.error('Error ', response)
+  useEffect(() => {
+    const fetchString = async () => {
+      try {
+        const response = await fetchData()
+        if (response) {
+          setItem(response)
+        } else {
+          MySwal.fire({
+            title: 'Oops something went wrong!',
+            text: '',
+            icon: 'error',
+          })
+          console.error('Error fetching data:', response)
+        }
+      } catch (err) {
+        MySwal.fire({
+          title: 'Oops something went wrong!',
+          text: '',
+          icon: 'error',
+        })
+        console.error('Fetch error:', err)
       }
-    } catch (err) {
-      console.error('Fetch error:', err)
     }
+
+    if (length !== null) {
+      fetchString()
+    }
+  }, [length])
+
+  const generateRandomString = (newLength: number) => {
+    setLength(newLength) // Trigger state update and re-fetch
   }
 
   return {
     item,
     loading,
     error,
-    handleGenerate,
+    generateRandomString,
   }
 }
 
-const useGenerateWords = (words: number) => {
-  const { fetchData, loading, error } = useGet<GeneratedWord>(
-    `/api/PuzzleGenerator/words/${words}`,
-    true
-  )
+const useGenerateWords = () => {
+  const [word, setWord] = useState<number | null>(null)
   const [item, setItem] = useState<GeneratedWord>({
     length: 0,
     wordCount: 0,
     wordSequence: '',
   })
+  const { fetchData, loading, error } = useGet<GeneratedWord>(
+    word !== null ? `api/PuzzleGenerator/words/${word}` : '',
+    true
+  )
 
+  // Effect to fetch words when `word` state changes
   useEffect(() => {
-    console.log('here ::')
-    fetchData()
-      .then((response) => {
-        if (!response.error && response.result) {
-          setItem(response.result)
+    const fetchWords = async () => {
+      try {
+        const response = await fetchData()
+        if (response) {
+          setItem(response)
+        } else {
+          MySwal.fire({
+            title: 'Oops something went wrong!',
+            text: '',
+            icon: 'error',
+          })
+          console.error('Error fetching words:', response)
         }
-      })
-      .catch((err) => {
-        console.log('\n\response', err)
-      })
-  }, [words])
+      } catch (err) {
+        MySwal.fire({
+          title: 'Oops something went wrong!',
+          text: '',
+          icon: 'error',
+        })
+        console.error('Fetch error:', err)
+      }
+    }
+
+    if (word !== null) {
+      fetchWords()
+    }
+  }, [word])
+
+  const generateWords = (newWordCount: number) => {
+    setWord(newWordCount) // Update word count and re-fetch
+  }
 
   return {
     item,
     loading,
     error,
+    generateWords,
   }
 }
 
 const useSolvePuzzle = () => {
+  const [sequence, setSequence] = useState<string | null>(null) // Sequence to solve
+  const [item, setItem] = useState<SolvePuzzle[] | null>(null) // Solved puzzle data
+  const { postData, loading, error, data } = usePost<SolvePuzzle>(
+    `api/PuzzleSolver`
+  )
+
+
+  useEffect(() => {
+    const solvePuzzle = async () => {
+      if (sequence !== null) {
+        try {
+          const payload = { wordSequence: sequence }
+          await postData(payload) 
+        } catch (err) {
+          MySwal.fire({
+            title: 'Oops something went wrong!',
+            text: `${err.message}`,
+            icon: 'error',
+          })
+          console.error('Post error:', err)
+        }
+      }
+    }
+
+    if (sequence !== null) {
+      solvePuzzle()
+    }
+  }, [sequence])
+
+
+  useEffect(() => {
+    if (data) {
+      setItem(data) 
+    } else if (error) {
+      MySwal.fire({
+        title: 'Oops something went wrong!',
+        text: `${error}`,
+        icon: 'error',
+      })
+      console.error('Error ', error)
+    }
+  }, [data, error])
+  
+  // Function to trigger puzzle solving
+  const handleSolve = (newSequence: string) => {
+    setSequence(newSequence)
+  }
+
+  return {
+    item,
+    loading,
+    error,
+    handleSolve,
+  }
+}
+
+/**const useSolvePuzzle = () => {
   const [sequence, setSequence] = useState<string | null>(null)
   const { postData, loading, error, data } = usePost<SolvePuzzle>(
     sequence !== null ? `api/PuzzleSolver` : ''
@@ -93,9 +195,19 @@ const useSolvePuzzle = () => {
       if (data) {
         setItem(data)
       } else {
+        MySwal.fire({
+          title: 'Oops something went wrong!',
+          text: '',
+          icon: 'error',
+        })
         console.error('Error ', response)
       }
     } catch (err) {
+      MySwal.fire({
+        title: 'Oops something went wrong!',
+        text: '',
+        icon: 'error',
+      })
       console.error('Post error:', err)
     }
   }
@@ -106,6 +218,6 @@ const useSolvePuzzle = () => {
     error,
     handleSolve,
   }
-}
+} */
 
 export { useGeneratedString, useGenerateWords, useSolvePuzzle }

@@ -11,16 +11,30 @@ import {
   TableHead,
   TableRow,
   CircularProgress,
+  Alert,
+  Typography,
 } from '@mui/material'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
 import { useSolvePuzzle } from '../hooks/use-number-word-finder'
 import { ChartData, ChartVisualization } from './ChartVisualization'
 
 const SolvePuzzle: React.FC = () => {
   const [wordSequence, setWordSequence] = useState('')
   const { handleSolve, error, item, loading } = useSolvePuzzle()
+  const MySwal = withReactContent(Swal)
 
   const solvePuzzle = async () => {
-    handleSolve(wordSequence)
+    if (wordSequence.trim().length > 0) {
+      // Check if the sequence is not empty or null
+      handleSolve(wordSequence)
+    } else {
+      MySwal.fire({
+        title: 'Oops!',
+        text: 'Input must not be empty',
+        icon: 'warning',
+      })
+    }
   }
 
   // Prepare chart data
@@ -37,6 +51,14 @@ const SolvePuzzle: React.FC = () => {
         alignItems: 'center',
       }}
     >
+      {loading && (
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress size={80} />
+          <Typography variant='body1'>Processing...</Typography>
+        </Box>
+      )}
+      {error && <Alert severity='error'>{error}</Alert>}
+
       <TextField
         label='Word Sequence'
         multiline
