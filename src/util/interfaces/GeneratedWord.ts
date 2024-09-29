@@ -3,3 +3,9 @@ export interface GeneratedWord {
   wordCount: number
   wordSequence: string
 }
+
+export interface SolvePuzzle {
+  value: number
+  count: number
+  word: string
+}

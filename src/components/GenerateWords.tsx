@@ -10,6 +10,7 @@ import { useGeneratedString } from '../hooks/use-number-word-finder'
 
 export const GenerateWords = () => {
   const [length, setLength] = useState(5)
+  const [words, setWords] = useState(5)
   const { item, handleGenerate, loading } = useGeneratedString()
 
   const handleGenerateClick = () => {
@@ -18,43 +19,54 @@ export const GenerateWords = () => {
   return (
     <Box
       sx={{
-        alignItems: 'center',
-        borderRadius: 1,
-        boxShadow: 'var(--mui-shadows-16)',
         display: 'flex',
         flexDirection: 'column',
-        p: 3,
+        alignItems: 'center',
       }}
     >
-      <Typography variant='h6'>Random String Generator</Typography>
+      <Typography variant='h4' sx={{ m: 2 }}>
+        Random String Generator
+      </Typography>
       <TextField
         label='Minimum Length'
         type='number'
         value={length}
         onChange={(e) => setLength(Number(e.target.value))}
-        sx={{ mb: 2 }}
-      />
-
-      <TextField
-        label='Minimum Words'
-        type='number'
-        value={length}
-        onChange={(e) => setLength(Number(e.target.value))}
-        sx={{ mb: 2 }}
+        sx={{ mb: 2, width: '50%' }}
       />
       <Button
         variant='contained'
         onClick={handleGenerateClick}
         disabled={loading}
+        sx={{ mb: 2, width: '50%' }}
       >
         {loading ? (
-          <CircularProgress size={24} />
+          <CircularProgress size={40} />
         ) : (
           'Generate by Minimum Length'
         )}
       </Button>
+      <TextField
+        label='Minimum Words'
+        type='number'
+        value={length}
+        onChange={(e) => setLength(Number(e.target.value))}
+        sx={{ mb: 2, width: '50%' }}
+      />
+      <Button
+        variant='contained'
+        onClick={handleGenerateClick}
+        disabled={loading}
+        sx={{ mb: 2, width: '50%' }}
+      >
+        {loading ? (
+          <CircularProgress size={40} />
+        ) : (
+          'Generate by Number of Words'
+        )}
+      </Button>
       {item && (
-        <Typography variant='body1' sx={{ mt: 2 }}>
+        <Typography variant='subtitle1' sx={{ m: 2 }}>
           Result: {item.wordSequence}
         </Typography>
       )}

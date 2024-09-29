@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import useGet from '../lib/api/use-get'
-import { GeneratedWord } from '../util/interfaces/GeneratedWord'
+import { GeneratedWord, SolvePuzzle } from '../util/interfaces/GeneratedWord'
 import usePost from '../lib/api/use-post'
 
 const useGeneratedString = () => {
@@ -71,15 +71,15 @@ const useGenerateWords = (words: number) => {
 
 const useSolvePuzzle = () => {
   const [sequence, setSequence] = useState<string | null>(null)
-  const { postData, loading, error, data } = usePost<GeneratedWord>(
+  const { postData, loading, error, data } = usePost<SolvePuzzle>(
     sequence !== null ? `api/PuzzleSolver` : ''
   )
 
-  const [item, setItem] = useState<GeneratedWord[]>([
+  const [item, setItem] = useState<SolvePuzzle[]>([
     {
-      length: 0,
-      wordCount: 0,
-      wordSequence: '',
+      value: 0,
+      count: 0,
+      word: '',
     },
   ])
   const handleSolve = async (sequence: string) => {
