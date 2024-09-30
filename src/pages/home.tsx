@@ -4,6 +4,7 @@ import Tab from '@mui/material/Tab'
 import { useState } from 'react'
 import { GenerateWords } from '../components/GenerateWords'
 import SolvePuzzle from '../components/SolvePuzzle'
+import RandomWordSolver from '../components/RandomWordSolver'
 
 interface TabPanelProps {
   children?: React.ReactNode
@@ -78,7 +79,7 @@ function Home() {
           <SolvePuzzle />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <SolvePuzzle />
+          <RandomWordSolver />
         </TabPanel>
       </Card>
     </Box>
