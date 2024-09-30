@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React from 'react'
 import {
   Button,
   TextField,
@@ -16,8 +16,8 @@ import {
 
 export const GenerateWords = () => {
   // State for length and word inputs
-  const [length, setLength] = useState(3)
-  const [word, setWord] = useState(1)
+  const [length, setLength] = React.useState(3)
+  const [word, setWord] = React.useState(1)
 
   // Custom hooks for generating strings and words
   const { item, generateRandomString, loading, error } = useGeneratedString()
@@ -76,7 +76,7 @@ export const GenerateWords = () => {
 
       {/* Error State */}
       {(error || useWordError) && (
-        <Alert severity='error'>{error || useWordError}</Alert>
+        <Alert severity='error'>Error : {error || useWordError}</Alert>
       )}
 
       {/* Input for Length */}
@@ -93,6 +93,7 @@ export const GenerateWords = () => {
         onClick={handleGenerateLength} // Ensure this uses the latest value from state
         disabled={loading}
         sx={{ mb: 2, width: '50%' }}
+        id='generatebyLength'
       >
         Generate by Minimum Length
       </Button>
