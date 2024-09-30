@@ -14,6 +14,12 @@ import {
   useGenerateWords,
 } from '../hooks/use-number-word-finder'
 
+/**
+ * GenerateWords component
+ * 
+ * This component generates random number words based on user input.
+ * It provides options to generate words by minimum length or word count.
+ */
 export const GenerateWords = () => {
   // State for length and word inputs
   const [length, setLength] = React.useState(3)

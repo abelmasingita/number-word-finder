@@ -19,6 +19,13 @@ import withReactContent from 'sweetalert2-react-content'
 import { useSolvePuzzle } from '../hooks/use-number-word-finder'
 import { ChartData, ChartVisualization } from './ChartVisualization'
 
+
+/**
+ * SolvePuzzleScreen component
+ * 
+ * This component allows users to enter a random number word sequence,
+ * solve the puzzle using the PuzzleSolver API, and display the results in a  table and a bar chat.
+ */
 const SolvePuzzle: React.FC = () => {
   const [wordSequence, setWordSequence] = useState('')
   const { handleSolve, error, item, loading } = useSolvePuzzle()

@@ -6,6 +6,11 @@ export interface ChartData {
   labels: string[]
 }
 
+
+  /**
+   * Visualises data in a bar chat
+   * @returns {void}
+   */
 export const ChartVisualization: React.FC<{ data: ChartData }> = ({ data }) => {
   const options: ApexCharts.ApexOptions = {
     chart: {
