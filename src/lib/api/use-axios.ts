@@ -1,7 +1,10 @@
 import axios, { AxiosError, AxiosResponse } from 'axios'
 
 // Create an Axios instance
-const axiosInstance = axios.create()
+const axiosInstance = axios.create({
+  baseURL: import.meta.env.VITE_BASE_URL,
+  timeout: 10000,
+})
 
 // Response interceptor
 axiosInstance.interceptors.response.use(

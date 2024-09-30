@@ -36,6 +36,7 @@ export const GenerateWords = () => {
   const MySwal = withReactContent(Swal)
 
   const handleGenerateLength = () => {
+
     if (length >= 3) {
       // Ensures the length is 3 or more before generating
       generateRandomString(length)
