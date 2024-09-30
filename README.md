@@ -1,50 +1,49 @@
-# React + TypeScript + Vite
+# Number Word Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A React application that generates random number words and solves number word puzzles.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+. Generate random number words by specifying minimum length or word count
+. Solve number word puzzles and display results in a table
+. Visualize puzzle solutions with bar charts
 
-## Expanding the ESLint configuration
+## Technologies Used
+. React
+. Vite
+. Material-UI (MUI)
+. Axios
+. Recharts
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Getting Started
+1.  Clone the repository:
+. git clone https://github.com/yourusername/number-word-finder.git
 
-- Configure the top-level `parserOptions` property like this:
+2. Install dependencies:
+. npm install
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+3. Run the application:
+. npm run dev
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Usage
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+1. Generate random number words:
+. Choose between generating by minimum length or word count
+. Enter the required value and click "Generate"
+. View the generated word sequence
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+2. Solve a puzzle:
+. Enter a random number word sequence
+. Click "Solve Puzzle"
+. View the results in a table and chart visualization
+
+## API Integration
+
+This application integrates with an external API for generating random number words and solving puzzles. The API endpoints used are:
+
+1. Generate random words by minimum length:
+. GET /api/PuzzleGenerator/minLength/{length}
+2. Generate random words by word count:
+. GET /api/PuzzleGenerator/words/{wordCount}
+3. Solve number word puzzles:
+. POST /api/PuzzleSolver
