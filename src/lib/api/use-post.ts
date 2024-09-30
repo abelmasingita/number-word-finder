@@ -20,6 +20,7 @@ function usePost<T>(url: string): ApiResponse<T> {
     setData(null)
 
     try {
+      //calls post url to pass data
       const response: AxiosResponse<T[]> = await axiosInstance.post(url, body)
 
       if (response.status === 200) {

@@ -1,12 +1,18 @@
 import { useEffect, useState } from 'react'
 import useGet from '../lib/api/use-get'
-import { GeneratedWord, SolvePuzzle } from '../util/interfaces/GeneratedWord'
+import { GeneratedWord } from '../util/interfaces/GeneratedWord'
 import usePost from '../lib/api/use-post'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { SolvePuzzle } from '../util/interfaces/SolvePuzzle'
 
 const MySwal = withReactContent(Swal) // used for error handling
 
+/**
+ * Generates random words by minimum length
+ * @param newLength Minimum length of the generated words
+ * @returns Promise resolving to generated words string
+ */
 const useGeneratedString = () => {
   const [length, setLength] = useState<number | null>(null)
   const [item, setItem] = useState<GeneratedWord>({
@@ -60,6 +66,11 @@ const useGeneratedString = () => {
   }
 }
 
+/**
+ * Generates random words by word count
+ * @param newWordCount Number of words to generate
+ * @returns Promise resolving to generated words string
+ */
 const useGenerateWords = () => {
   const [word, setWord] = useState<number | null>(null)
   const [item, setItem] = useState<GeneratedWord>({
@@ -114,24 +125,27 @@ const useGenerateWords = () => {
   }
 }
 
+/**
+ * Solves a number word puzzle
+ * @param newSequence Input word sequence
+ * @returns Promise resolving to puzzle solution
+ */
 const useSolvePuzzle = () => {
   const [sequence, setSequence] = useState<string | null>(null) // Sequence to solve
   const [item, setItem] = useState<SolvePuzzle[] | null>(null) // Solved puzzle data
-  const { postData, loading, error, data } = usePost<SolvePuzzle>(
-    `api/PuzzleSolver`
-  )
-
+  const { postData, loading, error, data } =
+    usePost<SolvePuzzle>(`api/PuzzleSolver`)
 
   useEffect(() => {
     const solvePuzzle = async () => {
       if (sequence !== null) {
         try {
           const payload = { wordSequence: sequence }
-          await postData(payload) 
+          await postData(payload)
         } catch (err) {
           MySwal.fire({
             title: 'Oops something went wrong!',
-            text: `${err.message}`,
+            text: '',
             icon: 'error',
           })
           console.error('Post error:', err)
@@ -144,10 +158,9 @@ const useSolvePuzzle = () => {
     }
   }, [sequence])
 
-
   useEffect(() => {
     if (data) {
-      setItem(data) 
+      setItem(data)
     } else if (error) {
       MySwal.fire({
         title: 'Oops something went wrong!',
@@ -157,7 +170,7 @@ const useSolvePuzzle = () => {
       console.error('Error ', error)
     }
   }, [data, error])
-  
+
   // Function to trigger puzzle solving
   const handleSolve = (newSequence: string) => {
     setSequence(newSequence)
@@ -170,54 +183,5 @@ const useSolvePuzzle = () => {
     handleSolve,
   }
 }
-
-/**const useSolvePuzzle = () => {
-  const [sequence, setSequence] = useState<string | null>(null)
-  const { postData, loading, error, data } = usePost<SolvePuzzle>(
-    sequence !== null ? `api/PuzzleSolver` : ''
-  )
-
-  const [item, setItem] = useState<SolvePuzzle[]>([
-    {
-      value: 0,
-      count: 0,
-      word: '',
-    },
-  ])
-  const handleSolve = async (sequence: string) => {
-    setSequence(sequence)
-
-    try {
-      const d = {
-        wordSequence: sequence,
-      }
-      const response = await postData(d)
-      if (data) {
-        setItem(data)
-      } else {
-        MySwal.fire({
-          title: 'Oops something went wrong!',
-          text: '',
-          icon: 'error',
-        })
-        console.error('Error ', response)
-      }
-    } catch (err) {
-      MySwal.fire({
-        title: 'Oops something went wrong!',
-        text: '',
-        icon: 'error',
-      })
-      console.error('Post error:', err)
-    }
-  }
-
-  return {
-    item,
-    loading,
-    error,
-    handleSolve,
-  }
-} */
 
 export { useGeneratedString, useGenerateWords, useSolvePuzzle }

@@ -18,6 +18,7 @@ function useGet<T>(url: string, isLazy = false): ApiResponse<T> {
   const fetchData = async (): Promise<T> => {
     try {
       setLoading(true)
+      //calls get url to get data
       const response: AxiosResponse<T> = await axiosInstance.get(url)
 
       if (response.status == 200) {

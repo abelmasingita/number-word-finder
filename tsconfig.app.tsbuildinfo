@@ -1,1 +1,1 @@
-{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts"],"version":"5.6.2"}
+{"root":["./src/app.tsx","./src/main.tsx","./src/vite-env.d.ts","./src/components/chartvisualization.tsx","./src/components/generatewords.tsx","./src/components/randomwordsolver.tsx","./src/components/solvepuzzle.tsx","./src/hooks/use-number-word-finder.ts","./src/lib/api/use-axios.ts","./src/lib/api/use-get.ts","./src/lib/api/use-post.ts","./src/pages/home.tsx","./src/util/interfaces/generatedword.ts","./src/util/interfaces/solvepuzzle.ts"],"version":"5.6.2"}
