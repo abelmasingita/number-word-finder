@@ -1,38 +1,58 @@
 import React from 'react'
-import { it, describe, expect, beforeEach } from 'vitest'
+import { it, describe, expect, beforeEach, vi, afterEach } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import SolvePuzzle from '../../src/components/SolvePuzzle'
 import '@testing-library/jest-dom/vitest'
-import axiosMock from 'axios'
-import MockAdapter from 'axios-mock-adapter'
+import { useSolvePuzzle } from '../../src/hooks/use-number-word-finder'
+
+vi.mock('../../src/hooks/use-number-word-finder', () => ({
+  useSolvePuzzle: vi.fn().mockImplementation(() => ({
+    handleSolve: vi.fn(),
+    error: '',
+    item: null,
+    loading: false,
+  })),
+}))
 
 describe('Solve Puzzle', () => {
-  const mock = new MockAdapter(axiosMock)
-
   beforeEach(() => {
-    // Reset mocks before each test
-    mock.reset()
+    vi.clearAllMocks()
   })
 
-  it('renders the Word Generator component', () => {
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('renders the Word Sequence input and Solve Puzzle button', () => {
     render(<SolvePuzzle />)
 
+    expect(screen.getByLabelText('Word Sequence')).toBeInTheDocument()
     expect(screen.getByText('Solve Puzzle')).toBeInTheDocument()
   })
 
-  /*it('fetches and displays generated word string when button is clicked', async () => {
-    const mockData = 'onetwothree'
-    mock.onGet('/api/PuzzleGenerator/minLength/5').reply(200, mockData)
+  it('calls handleSolve when solving puzzle', async () => {
+    const mockHandleSolve = vi.fn().mockImplementation((wordSequence) => {
+      expect(wordSequence).toBe('Test sequence')
+      return Promise.resolve({ item: [{ value: '1', word: 'One', count: 1 }] })
+    })
+
+    vi.mocked(useSolvePuzzle).mockImplementation(() => ({
+      handleSolve: mockHandleSolve,
+      error: '',
+      item: null,
+      loading: false,
+    }))
 
     render(<SolvePuzzle />)
 
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
+    const input = screen.getByLabelText('Word Sequence')
+    fireEvent.change(input, { target: { value: 'Test sequence' } })
+
+    const solveButton = screen.getByText('Solve Puzzle')
+    fireEvent.click(solveButton)
 
     await waitFor(() => {
-      expect(screen.getByTestId('generated-string')).toHaveTextContent(
-        'onetwothree'
-      )
-      expect(screen.getByTestId('generated-string')).toBeInTheDocument()
+      expect(mockHandleSolve).toHaveBeenCalled()
     })
-  })*/
+  })
 })

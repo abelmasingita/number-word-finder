@@ -106,7 +106,11 @@ export const GenerateWords = () => {
       </Button>
       {/* Display Result */}
       {item && (
-        <Typography variant='subtitle1' sx={{ m: 2 }}>
+        <Typography
+          variant='subtitle1'
+          sx={{ m: 2 }}
+          data-testid='generated-string'
+        >
           Result: {item?.wordSequence || ''}
         </Typography>
       )}

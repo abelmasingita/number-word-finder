@@ -12,12 +12,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { SolvePuzzle } from '../util/interfaces/SolvePuzzle'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 
-const SolveRandomizedWordSequence = (sequence: string) => {
+export const SolveRandomizedWordSequence = (sequence: string) => {
   const numberWords = [
     { word: 'zero', uniqueChar: 'z', value: 0 },
     { word: 'two', uniqueChar: 'w', value: 2 },

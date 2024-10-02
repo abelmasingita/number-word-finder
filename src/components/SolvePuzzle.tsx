@@ -107,7 +107,9 @@ const SolvePuzzle: React.FC = () => {
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
                     <TableCell align='right'>{row.value}</TableCell>
-                    <TableCell align='right'>{row.word}</TableCell>
+                    <TableCell align='right' data-testid='generated-string'>
+                      {row.word}
+                    </TableCell>
                     <TableCell align='right'>{row.count}</TableCell>
                   </TableRow>
                 ))}
