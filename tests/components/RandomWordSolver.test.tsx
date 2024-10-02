@@ -4,9 +4,9 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import RandomWordSolver from '../../src/components/RandomWordSolver'
 import '@testing-library/jest-dom/vitest'
 import { SolveRandomizedWordSequence } from '../../src/lib/random-word-solver/SolveRandomizedWordSequence'
-import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-const MySwal = withReactContent(Swal)
+/*import Swal from 'sweetalert2'
+/*import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)*/
 
 // Mock the SolveRandomizedWordSequence function
 vi.mock('../../src/lib/random-word-solver/SolveRandomizedWordSequence', () => ({
@@ -16,7 +16,7 @@ vi.mock('../../src/lib/random-word-solver/SolveRandomizedWordSequence', () => ({
 describe('RandomWordSolver', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    MySwal.fire = vi.fn()
+    //MySwal.fire = vi.fn()
   })
 
   afterEach(() => {

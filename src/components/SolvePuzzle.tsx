@@ -79,7 +79,8 @@ const SolvePuzzle: React.FC = () => {
         onClick={solvePuzzle}
         sx={{ mb: 2, width: '50%' }}
       >
-        {loading ? <CircularProgress size={40} /> : 'Solve Puzzle'}
+        {loading && <CircularProgress size={40} />}
+        Solve Puzzle
       </Button>
 
       {item && (
