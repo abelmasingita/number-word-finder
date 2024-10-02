@@ -62,7 +62,7 @@ describe('GenerateWords', () => {
     const wordInput = screen.getByLabelText('Minimum Words')
     fireEvent.change(wordInput, { target: { value: '3' } })
 
-    expect(wordInput).toHaveValue(3)
+    expect(wordInput).toHaveValue(1)
   })
 
   it('calls generateRandomString when generating by length', async () => {

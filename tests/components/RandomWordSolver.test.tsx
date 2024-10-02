@@ -4,9 +4,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import RandomWordSolver from '../../src/components/RandomWordSolver'
 import '@testing-library/jest-dom/vitest'
 import { SolveRandomizedWordSequence } from '../../src/lib/random-word-solver/SolveRandomizedWordSequence'
-/*import Swal from 'sweetalert2'
-/*import withReactContent from 'sweetalert2-react-content'
-const MySwal = withReactContent(Swal)*/
 
 // Mock the SolveRandomizedWordSequence function
 vi.mock('../../src/lib/random-word-solver/SolveRandomizedWordSequence', () => ({
@@ -16,7 +13,6 @@ vi.mock('../../src/lib/random-word-solver/SolveRandomizedWordSequence', () => ({
 describe('RandomWordSolver', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    //MySwal.fire = vi.fn()
   })
 
   afterEach(() => {
@@ -85,44 +81,4 @@ describe('RandomWordSolver', () => {
     expect(screen.getByRole('progressbar')).toBeInTheDocument()
     expect(screen.getByText('Processing...')).toBeInTheDocument()
   })
-
-  /*it('handles empty input validation', async () => {
-    ;(SolveRandomizedWordSequence as unknown as vi.Mock).mockImplementation(
-      () => Promise.resolve([])
-    )
-
-    render(<RandomWordSolver />)
-
-    const solveButton = screen.getByText('Solve')
-    fireEvent.click(solveButton)
-
-    await waitFor(() => {
-      expect(Swal.fire).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Oops!',
-          icon: 'warning',
-        })
-      )
-    })
-  })
-
-  it('displays error message', async () => {
-    ;(SolveRandomizedWordSequence as unknown as vi.Mock).mockImplementation(
-      () => {
-        throw new Error('An error occurred')
-      }
-    )
-
-    render(<RandomWordSolver />)
-
-    const input = screen.getByLabelText('Word Sequence')
-    fireEvent.change(input, { target: { value: 'Test sequence' } })
-
-    const solveButton = screen.getByText('Solve')
-    fireEvent.click(solveButton)
-
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('An error occurred')
-    })
-  })*/
 })

@@ -37,6 +37,7 @@ const RandomWordSolver: React.FC = () => {
 
       setItems(results)
     } else {
+      // Show an alert if the input is empty
       MySwal.fire({
         title: 'Oops!',
         text: 'Input must not be empty',
