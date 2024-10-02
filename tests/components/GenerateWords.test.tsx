@@ -1,119 +1,194 @@
 import React from 'react'
-import { it, describe, expect } from 'vitest'
+import { it, describe, expect, beforeEach, vi, afterEach } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { GenerateWords } from '../../src/components/GenerateWords'
 import '@testing-library/jest-dom/vitest'
-import axiosMock from 'axios'
-import MockAdapter from 'axios-mock-adapter'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+import {
+  useGeneratedString,
+  useGenerateWords,
+} from '../../src/hooks/use-number-word-finder'
 
-describe('Generate Random Words ByMinLength', () => {
-  const mock = new MockAdapter(axiosMock)
+// Mock SweetAlert
+const MySwal = withReactContent(Swal)
 
-  it('renders the Word Generator component', () => {
+// Mock the custom hooks
+vi.mock('../../src/hooks/use-number-word-finder', () => ({
+  useGeneratedString: vi.fn(),
+  useGenerateWords: vi.fn(),
+}))
+
+describe('GenerateWords', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    MySwal.fire = vi.fn()
+
+    // Set default return values for the mocked hooks
+    ;(useGeneratedString as unknown as vi.Mock).mockReturnValue({
+      item: null,
+      generateRandomString: vi.fn(),
+      loading: false,
+      error: null,
+    })
+
+    ;(useGenerateWords as unknown as vi.Mock).mockReturnValue({
+      item: null,
+      generateWords: vi.fn(),
+      loading: false,
+      error: null,
+    })
+  })
+
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
+  it('renders the component correctly', () => {
     render(<GenerateWords />)
 
     expect(screen.getByText('Random String Generator')).toBeInTheDocument()
+    expect(screen.getByLabelText('Minimum Length')).toBeInTheDocument()
+    expect(screen.getByLabelText('Minimum Words')).toBeInTheDocument()
+    expect(screen.getByText('Generate by Minimum Length')).toBeInTheDocument()
+    expect(screen.getByText('Generate by Number of Words')).toBeInTheDocument()
   })
 
-  it('fetches and displays generated word string when button is clicked', async () => {
-    const mockData = 'onetwothree'
-    mock
-      .onGet(
-        'https://numberwordgenerator20240927020628.azurewebsites.net/api/PuzzleGenerator/minLength/5'
-      )
-      .reply(200, mockData)
+  it('handles length input change', () => {
+    render(<GenerateWords />)
+
+    const lengthInput = screen.getByLabelText('Minimum Length')
+    fireEvent.change(lengthInput, { target: { value: '5' } })
+
+    expect(lengthInput).toHaveValue(5)
+  })
+
+  it('handles word input change', () => {
+    render(<GenerateWords />)
+
+    const wordInput = screen.getByLabelText('Minimum Words')
+    fireEvent.change(wordInput, { target: { value: '3' } })
+
+    expect(wordInput).toHaveValue(3)
+  })
+
+  it('calls generateRandomString when generating by length', async () => {
+    const mockResult = { wordSequence: 'Test string' }
+    ;(useGeneratedString as unknown as vi.Mock).mockImplementation(() => ({
+      item: mockResult,
+      generateRandomString: vi.fn(),
+      loading: false,
+      error: null,
+    }))
 
     render(<GenerateWords />)
 
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
+    const lengthInput = screen.getByLabelText('Minimum Length')
+    fireEvent.change(lengthInput, { target: { value: '5' } })
+
+    const generateButton = screen.getByText('Generate by Minimum Length')
+    fireEvent.click(generateButton)
 
     await waitFor(() => {
+      expect(useGeneratedString().generateRandomString).toHaveBeenCalledWith(5)
       expect(screen.getByTestId('generated-string')).toHaveTextContent(
-        'onetwothree'
+        'Result: Test string'
       )
-      expect(screen.getByTestId('generated-string')).toBeInTheDocument()
     })
   })
 
-  it('handles loading state', async () => {
-    mock.onGet('/api/PuzzleGenerator/minLength/5').reply(200, '')
+  it('shows loading state when generating', async () => {
+    ;(useGeneratedString as unknown as vi.Mock).mockImplementation(() => ({
+      item: null,
+      generateRandomString: vi.fn(),
+      loading: true,
+      error: null,
+    }))
 
     render(<GenerateWords />)
 
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
+    const lengthInput = screen.getByLabelText('Minimum Length')
+    fireEvent.change(lengthInput, { target: { value: '5' } })
+
+    const generateButton = screen.getByText('Generate by Minimum Length')
+    fireEvent.click(generateButton)
+
+    expect(screen.getByRole('progressbar')).toBeInTheDocument()
+  })
+
+  it('shows alert for invalid minimum length input', async () => {
+    render(<GenerateWords />)
+
+    const lengthInput = screen.getByLabelText('Minimum Length')
+    fireEvent.change(lengthInput, { target: { value: '2' } })
+
+    const generateButton = screen.getByText('Generate by Minimum Length')
+    fireEvent.click(generateButton)
 
     await waitFor(() => {
-      expect(screen.getByText('Processing...')).toBeInTheDocument()
-    })
-  })
-
-  it('handles error state', async () => {
-    mock.onGet('/api/PuzzleGenerator/minLength/5').reply(500, '', {
-      message: 'Server error',
-    })
-
-    render(<GenerateWords />)
-
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Error :')).toBeInTheDocument()
-    })
-  })
-})
-
-describe('Generate Random Words By MinWords', () => {
-  const mock = new MockAdapter(axiosMock)
-
-  it('renders the Word Generator component', () => {
-    render(<GenerateWords />)
-
-    expect(screen.getByText('Random String Generator')).toBeInTheDocument()
-  })
-
-  it('fetches and displays generated word string when button is clicked', async () => {
-    const mockData = 'onetwothree'
-    mock
-      .onGet(
-        'https://numberwordgenerator20240927020628.azurewebsites.net/api/PuzzleGenerator/minLength/5'
+      expect(MySwal.fire).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Oops!',
+          text: 'Input must be greater than 3',
+          icon: 'warning',
+        })
       )
-      .reply(200, mockData)
+    })
+  })
+
+  it('calls generateWords when generating by number of words', async () => {
+    const mockResult = { wordSequence: 'Test words' }
+    ;(useGenerateWords as unknown as vi.Mock).mockImplementation(() => ({
+      item: mockResult,
+      generateWords: vi.fn(),
+      loading: false,
+      error: null,
+    }))
 
     render(<GenerateWords />)
 
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
+    const wordInput = screen.getByLabelText('Minimum Words')
+    fireEvent.change(wordInput, { target: { value: '3' } })
+
+    const generateButton = screen.getByText('Generate by Number of Words')
+    fireEvent.click(generateButton)
 
     await waitFor(() => {
-      expect(screen.getByTestId('generated-string')).toHaveTextContent(
-        'onetwothree'
+      expect(useGenerateWords().generateWords).toHaveBeenCalledWith(3)
+      expect(screen.getByText('Result: Test words')).toBeInTheDocument()
+    })
+  })
+
+  it('shows alert for invalid minimum words input', async () => {
+    render(<GenerateWords />)
+
+    const wordInput = screen.getByLabelText('Minimum Words')
+    fireEvent.change(wordInput, { target: { value: '0' } })
+
+    const generateButton = screen.getByText('Generate by Number of Words')
+    fireEvent.click(generateButton)
+
+    await waitFor(() => {
+      expect(MySwal.fire).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Oops!',
+          text: 'Input must be greater than 1',
+          icon: 'warning',
+        })
       )
-      expect(screen.getByTestId('generated-string')).toBeInTheDocument()
     })
   })
 
-  it('handles loading state', async () => {
-    mock.onGet('/api/PuzzleGenerator/minLength/5').reply(200, '')
+  it('displays error message when there is an error', async () => {
+    ;(useGeneratedString as unknown as vi.Mock).mockImplementation(() => ({
+      item: null,
+      generateRandomString: vi.fn(),
+      loading: false,
+      error: 'An error occurred',
+    }))
 
     render(<GenerateWords />)
 
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Processing...')).toBeInTheDocument()
-    })
-  })
-
-  it('handles error state', async () => {
-    mock.onGet('/api/PuzzleGenerator/minLength/5').reply(500, '', {
-      message: 'Server error',
-    })
-
-    render(<GenerateWords />)
-
-    fireEvent.click(screen.getByText('Generate by Minimum Length'))
-
-    await waitFor(() => {
-      expect(screen.getByText('Error :')).toBeInTheDocument()
-    })
+    expect(screen.getByText('Error : An error occurred')).toBeInTheDocument()
   })
 })
