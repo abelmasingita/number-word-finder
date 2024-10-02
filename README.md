@@ -28,12 +28,20 @@ A React application that generates random number words and solves number word pu
 
 ### Usage
 
-### 1. Generate random number words:
+### 1. Generate random number words (Generator Tab):
+* Problem 1(Objective One)
 * Choose between generating by minimum length or word count
 * Enter the required value and click "Generate"
 * View the generated word sequence
 
-### 2. Solve a puzzle:
+### 2. Solve a puzzle (Puzzle Solver Tab):
+* Problem 1(Objective Two)
+* Enter a random number word sequence
+* Click "Solve Puzzle"
+* View the results in a table and chart visualization
+
+### 3. Solve a puzzle (Random Word Solver Tab):
+* Problem 2 (Objective)
 * Enter a random number word sequence
 * Click "Solve Puzzle"
 * View the results in a table and chart visualization
@@ -48,6 +56,8 @@ This application integrates with an external API for generating random number wo
 * GET /api/PuzzleGenerator/words/{wordCount}
 ### 3. Solve number word puzzles:
 * POST /api/PuzzleSolver
+
+
 
 # Demo
 * https://b1sa-numberwordfinder.netlify.app
