@@ -13,11 +13,12 @@ A React application that generates random number words and solves number word pu
 * Vite
 * Material-UI (MUI)
 * Axios
-* Recharts
+* React Apex-charts
+* Vitest (Testing Framework)
 
 ### Getting Started
 ### 1.  Clone the repository:
-* git clone https://github.com/yourusername/number-word-finder.git
+* git clone https://github.com/abelmasingita/number-word-finder.git
 
 ### 2. Install dependencies:
 * npm install
