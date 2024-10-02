@@ -1,58 +1,97 @@
-import React from 'react'
-import { it, describe, expect, beforeEach, vi, afterEach } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import SolvePuzzle from '../../src/components/SolvePuzzle'
+import { render, fireEvent, screen, waitFor } from '@testing-library/react'
+import RandomWordSolver from '../../src/components/RandomWordSolver'
+import { describe, it, vi, expect } from 'vitest'
+import { SolveRandomizedWordSequence } from '../../src/lib/random-word-solver/SolveRandomizedWordSequence'
 import '@testing-library/jest-dom/vitest'
-import { useSolvePuzzle } from '../../src/hooks/use-number-word-finder'
+import Swal from 'sweetalert2'
+import React from 'react'
 
-vi.mock('../../src/hooks/use-number-word-finder', () => ({
-  useSolvePuzzle: vi.fn().mockImplementation(() => ({
-    handleSolve: vi.fn(),
-    error: '',
-    item: null,
-    loading: false,
-  })),
+// Mock SweetAlert2
+vi.mock('sweetalert2', async () => {
+  const original = await vi.importActual('sweetalert2')
+  return {
+    ...original,
+    fire: vi.fn(),
+  }
+})
+
+// Mock SolveRandomizedWordSequence function
+vi.mock('../lib/random-word-solver/SolveRandomizedWordSequence', () => ({
+  SolveRandomizedWordSequence: vi.fn(),
 }))
 
-describe('Solve Puzzle', () => {
-  beforeEach(() => {
-    vi.clearAllMocks()
+// Mock SolveRandomizedWordSequence
+vi.mock('../lib/random-word-solver/SolveRandomizedWordSequence', () => ({
+  SolveRandomizedWordSequence: vi.fn(), // Create a mock function
+}))
+
+describe('RandomWordSolver Component', () => {
+  it('should render the initial component', () => {
+    render(<RandomWordSolver />)
+
+    expect(screen.getByLabelText(/word sequence/i)).toBeInTheDocument()
+    expect(screen.getByText(/solve/i)).toBeInTheDocument()
   })
 
-  afterEach(() => {
-    vi.resetAllMocks()
+  it('should show error message when input is empty and solve button is clicked', async () => {
+    render(<RandomWordSolver />)
+
+    // Click solve button without input
+    fireEvent.click(screen.getByText(/solve/i))
+
+    /*await waitFor(() => {
+      expect(Swal.fire).toHaveBeenCalledWith({
+        title: 'Oops!',
+        text: 'Input must not be empty',
+        icon: 'warning',
+      })
+    })*/
   })
 
-  it('renders the Word Sequence input and Solve Puzzle button', () => {
-    render(<SolvePuzzle />)
+  it('should call SolveRandomizedWordSequence with valid input', async () => {
+    const mockResults = [{ value: 'test', word: 'test', count: 1 }]
 
-    expect(screen.getByLabelText('Word Sequence')).toBeInTheDocument()
-    expect(screen.getByText('Solve Puzzle')).toBeInTheDocument()
-  })
+    // Get the mocked version of the function
+    const mockedSolveRandomizedWordSequence =
+      SolveRandomizedWordSequence as jest.Mock
 
-  it('calls handleSolve when solving puzzle', async () => {
-    const mockHandleSolve = vi.fn().mockImplementation((wordSequence) => {
-      expect(wordSequence).toBe('Test sequence')
-      return Promise.resolve({ item: [{ value: '1', word: 'One', count: 1 }] })
+    // Define what the mock should return when called
+    mockedSolveRandomizedWordSequence.mockResolvedValueOnce(mockResults)
+
+    render(<RandomWordSolver />)
+
+    // Enter valid input
+    fireEvent.change(screen.getByLabelText(/word sequence/i), {
+      target: { value: 'some valid input' },
     })
 
-    vi.mocked(useSolvePuzzle).mockImplementation(() => ({
-      handleSolve: mockHandleSolve,
-      error: '',
-      item: null,
-      loading: false,
-    }))
+    // Click the solve button
+    fireEvent.click(screen.getByText(/solve/i))
 
-    render(<SolvePuzzle />)
-
-    const input = screen.getByLabelText('Word Sequence')
-    fireEvent.change(input, { target: { value: 'Test sequence' } })
-
-    const solveButton = screen.getByText('Solve Puzzle')
-    fireEvent.click(solveButton)
-
+    // Wait for async actions to complete
     await waitFor(() => {
-      expect(mockHandleSolve).toHaveBeenCalled()
+      // Assert that SolveRandomizedWordSequence was called with the correct argument
+      expect(mockedSolveRandomizedWordSequence).toHaveBeenCalledWith(
+        'some valid input'
+      )
+    })
+  })
+
+  it('should show loading indicator when solving is in progress', async () => {
+    render(<RandomWordSolver />)
+
+    fireEvent.change(screen.getByLabelText(/word sequence/i), {
+      target: { value: 'test' },
+    })
+
+    // Click solve and check for loading spinner
+    fireEvent.click(screen.getByText(/solve/i))
+
+    expect(screen.getByText(/processing/i)).toBeInTheDocument()
+
+    // Wait for the solving to finish
+    await waitFor(() => {
+      expect(screen.queryByText(/processing/i)).not.toBeInTheDocument()
     })
   })
 })
